@@ -11,7 +11,6 @@ import {
     Bot,
     Loader2,
     CheckCircle2,
-    AlertCircle,
     Star,
     X,
     Plus,
@@ -19,6 +18,9 @@ import {
     Download,
     Copy,
     ExternalLink,
+    ChevronDown,
+    Calendar,
+    FileText,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { QRCodeSVG } from 'qrcode.react';
@@ -28,7 +30,7 @@ import 'leaflet/dist/leaflet.css';
 import {
     useEventForm,
     type EventCategory,
-    type EventFormData,
+    type ScheduleDay,
 } from '../../hooks/useEventForm';
 
 // ── Constants ───────────────────────────────────────────────
@@ -151,8 +153,8 @@ export default function NewEventPage() {
                     <div key={s} className="flex items-center gap-1.5">
                         <span
                             className={`flex items-center justify-center w-6 h-6 rounded-full transition ${step >= s
-                                    ? 'bg-indigo-600 text-white'
-                                    : 'bg-gray-200 text-gray-500'
+                                ? 'bg-indigo-600 text-white'
+                                : 'bg-gray-200 text-gray-500'
                                 }`}
                         >
                             {step > s ? <CheckCircle2 className="w-3.5 h-3.5" /> : s}
@@ -192,8 +194,8 @@ export default function NewEventPage() {
                             onDrop={onDrop}
                             onClick={() => fileInputRef.current?.click()}
                             className={`flex flex-col items-center justify-center py-16 border-2 border-dashed rounded-xl cursor-pointer transition ${dragOver
-                                    ? 'border-indigo-500 bg-indigo-50'
-                                    : 'border-gray-300 hover:border-indigo-400 hover:bg-gray-50'
+                                ? 'border-indigo-500 bg-indigo-50'
+                                : 'border-gray-300 hover:border-indigo-400 hover:bg-gray-50'
                                 }`}
                         >
                             <Upload className="w-10 h-10 text-gray-400 mb-3" />
@@ -240,6 +242,16 @@ export default function NewEventPage() {
                             <p>
                                 AI auto-filled the form below. Fields with confidence indicators may need review.
                                 <span className="ml-1 font-medium">All fields are editable.</span>
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Multipage PDF badge */}
+                    {parsed?.is_multipage && (
+                        <div className="flex items-center gap-2 bg-blue-50 rounded-lg p-3 text-xs text-blue-700">
+                            <FileText className="w-4 h-4 shrink-0" />
+                            <p>
+                                Multi-page PDF detected — <span className="font-semibold">{parsed.pages_processed} pages</span> processed.
                             </p>
                         </div>
                     )}
@@ -344,6 +356,11 @@ export default function NewEventPage() {
                                 onChange={(tags) => updateField('learning_outcomes', tags)}
                             />
                         </FieldWithConfidence>
+
+                        {/* Schedule (from multi-day events / hackathons) */}
+                        {parsed?.schedule && parsed.schedule.length > 0 && (
+                            <ScheduleSection schedule={parsed.schedule} />
+                        )}
 
                         {/* Max Participants + Difficulty */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -581,8 +598,8 @@ function StarRating({
                 >
                     <Star
                         className={`w-6 h-6 ${s <= value
-                                ? 'fill-amber-400 text-amber-400'
-                                : 'text-gray-300'
+                            ? 'fill-amber-400 text-amber-400'
+                            : 'text-gray-300'
                             }`}
                     />
                 </button>
@@ -648,6 +665,68 @@ function TagInput({
                     <Plus className="w-3.5 h-3.5" /> Add
                 </button>
             </div>
+        </div>
+    );
+}
+
+// ── Schedule section (collapsible) ────────────────────────────
+
+function ScheduleSection({ schedule }: { schedule: ScheduleDay[] }) {
+    const [open, setOpen] = useState(true);
+
+    return (
+        <div className="border border-indigo-100 rounded-lg overflow-hidden">
+            <button
+                type="button"
+                onClick={() => setOpen(!open)}
+                className="w-full flex items-center justify-between px-4 py-3 bg-indigo-50 hover:bg-indigo-100 transition text-left"
+            >
+                <span className="flex items-center gap-2 text-sm font-semibold text-indigo-800">
+                    <Calendar className="w-4 h-4" />
+                    Event Schedule ({schedule.length} day{schedule.length > 1 ? 's' : ''})
+                </span>
+                <ChevronDown
+                    className={`w-4 h-4 text-indigo-500 transition-transform ${open ? 'rotate-180' : ''
+                        }`}
+                />
+            </button>
+
+            {open && (
+                <div className="divide-y divide-indigo-50">
+                    {schedule.map((day) => (
+                        <div key={day.day} className="px-4 py-3">
+                            <div className="flex items-center gap-2 mb-1.5">
+                                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-bold">
+                                    {day.day}
+                                </span>
+                                <span className="text-sm font-medium text-gray-800">
+                                    Day {day.day}
+                                    {day.date && (
+                                        <span className="ml-1.5 text-gray-400 font-normal">
+                                            — {new Date(day.date).toLocaleDateString('en-IN', {
+                                                weekday: 'short',
+                                                month: 'short',
+                                                day: 'numeric',
+                                            })}
+                                        </span>
+                                    )}
+                                </span>
+                            </div>
+                            <ul className="ml-8 space-y-1">
+                                {day.activities.map((activity, i) => (
+                                    <li
+                                        key={i}
+                                        className="flex items-start gap-1.5 text-sm text-gray-600"
+                                    >
+                                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0" />
+                                        {activity}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

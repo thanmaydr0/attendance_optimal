@@ -12,6 +12,12 @@ export type EventCategory =
     | 'workshop'
     | 'seminar';
 
+export interface ScheduleDay {
+    day: number;
+    date: string | null;
+    activities: string[];
+}
+
 export interface ParsedBannerData {
     name?: string;
     description?: string;
@@ -20,7 +26,10 @@ export interface ParsedBannerData {
     start_datetime?: string;
     end_datetime?: string;
     learning_outcomes?: string[];
+    schedule?: ScheduleDay[] | null;
     confidence: Record<string, 'high' | 'medium' | 'low'>;
+    is_multipage?: boolean;
+    pages_processed?: number;
 }
 
 export interface EventFormData {
@@ -97,11 +106,13 @@ export function useEventForm() {
 
     // ── Call Edge Function to parse banner ────────────────
     const parseBanner = useCallback(
-        async (fileUrl: string) => {
+        async (fileUrl: string, fileType?: 'image' | 'pdf') => {
             setParsing(true);
             try {
+                const detectedType =
+                    fileType ?? (fileUrl.toLowerCase().endsWith('.pdf') ? 'pdf' : 'image');
                 const { data, error } = await supabase.functions.invoke('parse-banner', {
-                    body: { banner_url: fileUrl },
+                    body: { banner_url: fileUrl, file_type: detectedType },
                 });
 
                 if (error) throw error;
@@ -136,7 +147,8 @@ export function useEventForm() {
     const uploadAndParse = useCallback(
         async (file: File) => {
             const url = await uploadBanner(file);
-            return parseBanner(url);
+            const fileType = file.type === 'application/pdf' ? 'pdf' as const : 'image' as const;
+            return parseBanner(url, fileType);
         },
         [uploadBanner, parseBanner],
     );
