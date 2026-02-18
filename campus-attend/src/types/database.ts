@@ -260,6 +260,63 @@ export interface Database {
                 };
             };
 
+            class_sessions: {
+                Row: {
+                    id: string;
+                    subject_id: string | null;
+                    scheduled_date: string;
+                    start_time: string;
+                    end_time: string;
+                    venue: string | null;
+                    session_type: 'lecture' | 'lab' | 'tutorial';
+                    is_cancelled: boolean;
+                    created_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    subject_id?: string | null;
+                    scheduled_date: string;
+                    start_time: string;
+                    end_time: string;
+                    venue?: string | null;
+                    session_type?: 'lecture' | 'lab' | 'tutorial';
+                    is_cancelled?: boolean;
+                    created_at?: string;
+                };
+                Update: {
+                    id?: string;
+                    subject_id?: string | null;
+                    scheduled_date?: string;
+                    start_time?: string;
+                    end_time?: string;
+                    venue?: string | null;
+                    session_type?: 'lecture' | 'lab' | 'tutorial';
+                    is_cancelled?: boolean;
+                    created_at?: string;
+                };
+            };
+
+            student_subjects: {
+                Row: {
+                    id: string;
+                    student_id: string | null;
+                    subject_id: string | null;
+                    enrolled_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    student_id?: string | null;
+                    subject_id?: string | null;
+                    enrolled_at?: string;
+                };
+                Update: {
+                    id?: string;
+                    student_id?: string | null;
+                    subject_id?: string | null;
+                    enrolled_at?: string;
+                };
+            };
+
             academic_semesters: {
                 Row: {
                     id: string;
@@ -327,6 +384,8 @@ export type UpdateDto<T extends keyof Database['public']['Tables']> =
 // Shorthand row types
 export type Profile = Tables<'profiles'>;
 export type Subject = Tables<'subjects'>;
+export type ClassSession = Tables<'class_sessions'>;
+export type StudentSubject = Tables<'student_subjects'>;
 export type Event = Tables<'events'>;
 export type AttendanceRecord = Tables<'attendance_records'>;
 export type EventRegistration = Tables<'event_registrations'>;

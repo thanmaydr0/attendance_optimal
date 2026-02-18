@@ -10,7 +10,7 @@ import RegisterPage from './pages/auth/RegisterPage';
 // ── Student ─────────────────────────────────────────────────
 import StudentLayout from './pages/student/StudentLayout';
 import StudentDashboard from './pages/student/StudentDashboard';
-import StudentTimetable from './pages/student/StudentTimetable';
+import StudentTimetable from './pages/student/TimetablePage';
 import StudentEvents from './pages/student/StudentEvents';
 import StudentAttendance from './pages/student/StudentAttendance';
 import StudentRoadmap from './pages/student/StudentRoadmap';
