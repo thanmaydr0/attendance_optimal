@@ -1,0 +1,15 @@
+# Supabase project configuration
+# See: https://supabase.com/docs/guides/cli/config
+
+[project]
+id = "campus-attend"
+
+# ── Edge Functions ───────────────────────────────────────────
+
+[functions.parse-banner]
+verify_jwt = true
+# Set OPENAI_API_KEY in supabase secrets:
+#   supabase secrets set OPENAI_API_KEY=sk-...
+
+[functions.send-whatsapp]
+verify_jwt = true
