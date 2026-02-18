@@ -3,7 +3,7 @@ import { useAuth } from '../hooks/useAuth';
 import { Loader2 } from 'lucide-react';
 
 interface ProtectedRouteProps {
-    role: string;
+    role?: string;
     children: React.ReactNode;
 }
 
@@ -22,7 +22,7 @@ export default function ProtectedRoute({ role, children }: ProtectedRouteProps) 
         return <Navigate to="/login" replace />;
     }
 
-    if (profile && profile.role !== role) {
+    if (role && profile && profile.role !== role) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4 text-center">
                 <div className="bg-white shadow-lg rounded-2xl p-10 max-w-sm space-y-4">

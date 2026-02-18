@@ -15,6 +15,7 @@ import StudentEvents from './pages/student/StudentEvents';
 import StudentAttendance from './pages/student/AttendancePage';
 import StudentRoadmap from './pages/student/StudentRoadmap';
 import StudentCheckIn from './pages/student/StudentCheckIn';
+import CheckInPage from './pages/student/CheckInPage';
 
 // ── Faculty ─────────────────────────────────────────────────
 import FacultyLayout from './pages/faculty/FacultyLayout';
@@ -46,6 +47,16 @@ export default function App() {
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+
+          {/* ── QR Check-in (public URL, requires auth) ── */}
+          <Route
+            path="/checkin/:token"
+            element={
+              <ProtectedRoute>
+                <CheckInPage />
+              </ProtectedRoute>
+            }
+          />
 
           {/* ── Student routes ─────────────────────────── */}
           <Route
